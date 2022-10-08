@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Ad;
+use App\Entity\Image;
 use Faker\Factory;
 
 use Doctrine\Persistence\ObjectManager;
@@ -33,6 +34,16 @@ class AppFixtures extends Fixture
 
 
             $manager->persist($ad);
+
+            //gestion de l'image de l'annonce
+            for($j=1; $j<=rand(2,5) ; $j++)
+            {
+                $image = new Image();
+                $image ->setUrl('https://picsum.photos/200/200')
+                    ->setCaption($faker->sentence())
+                    ->setAd($ad);
+                $manager->persist($image);
+            }
         }
 
 
