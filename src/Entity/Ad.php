@@ -49,7 +49,6 @@ class Ad
 
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
-
     public function initializeSlug():void{
         if (empty($this->slug)){
             $slugify = new Slugify();
