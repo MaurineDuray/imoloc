@@ -3,18 +3,21 @@
 namespace App\Controller;
 
 use App\Entity\Ad;
+use App\Entity\Image;
 use App\Form\AnnonceType;
 use App\Repository\AdRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class AdController extends AbstractController
 {
     /**
-     * PErmet d'afficher l'ensemble des annonces
+     * Permet d'afficher l'ensemble des annonces
      *
      * @param AdRepository $repo
      * @return Response
@@ -22,73 +25,76 @@ class AdController extends AbstractController
     #[Route('/ads', name: 'ads_index')]
     public function index(AdRepository $repo): Response
     {
-        $ads = $repo -> findAll();
+        $ads = $repo->findAll();
+
+
         return $this->render('ad/index.html.twig', [
-            'ads' => $ads, //envoie toutes les annonces
+            'ads' => $ads
         ]);
     }
 
-    // #[Route('/ads/{slug}', name:'ads_show')]
-    // public function show(string $slug ,ManagerRegistry $doctrine):Response
-    // {
-    //     $repo = $doctrine->getRepository(Ad::class); // ancienne méthode
-    //     $ad = $repo->findOneBySlug($slug);
-    //     return $this->render('ad/show.html.twig',[
-    //         'ad'=> $ad 
-    //     ]);
-    // }
-
-   
-    #[Route('ads/new', name:"ads_create")]
-    public function create(): Response
+    #[Route("/ads/new", name:"ads_create")]
+    public function create(Request $request, EntityManagerInterface $manager): Response
     {
-        $ad = new Ad(); // sur quoi porte le formulaire 
+        $ad = new Ad();
 
-        // $form = $this-> createFormBuilder($ad) // crée un formulaire sur qui pour les champs qui suivent
-        //     ->add('title')
-        //     ->add('introduction')
-        //     ->add('content')
-        //     ->add('rooms')
-        //     ->add('price')
-        //     ->add('save', SubmitType::class, [
-        //         'label' =>"créer la nouvelle annonce",
-        //         "attr" =>[
-        //             'class' => 'btn btn-primary'
-        //         ]
-        //     ]) //bouton envoyer
-        //     ->getForm();
+        // $image1 = new Image();
+        // $image1->setUrl('https://picsum.photos/400/200')
+        //     ->setCaption('Titre 1');
+        
+        // $ad->addImage($image1);   
 
-            // $form = $this-> createFormBuilder($ad) // crée un formulaire sur qui pour les champs qui suivent
-            // ->add('title')
-            // ->add('introduction')
-            // ->add('content')
-            // ->add('rooms')
-            // ->add('price')
-            
-            // ->getForm();
+        // $image2 = new Image();
+        // $image2->setUrl('https://picsum.photos/400/200')
+        //     ->setCaption('Titre 2');
+        
+        // $ad->addImage($image2);    
 
-            // externaliser toutes les lignes commentées dans src>form>AnnonceType
 
-            $form = $this->createForm(AnnonceType::class, $ad);
+        $form = $this->createForm(AnnonceType::class, $ad);
+        // permet de récupèrer la requête et l'état du formulaire
+        $form->handleRequest($request);
+
+        // Es-ce que mon formulaire à été soumis?
+        if($form->isSubmitted() && $form->isValid())
+        {
+            // gestion des images 
+            foreach($ad->getImages() as $image)
+            {
+                $image->setAd($ad);
+                $manager->persist($image);
+            }
+
+            $manager->persist($ad);
+            $manager->flush();
+
+            $this->addFlash(
+                'success',
+                "L'annonce <strong>{$ad->getTitle()}</strong> a bien été enregistrée!"
+            );
+          
+            return $this->redirectToRoute('ads_show', [
+                'slug' => $ad->getSlug()
+            ]);
+        }
 
         return $this->render("ad/new.html.twig",[
-            'myform'=> $form->createView()  //affiche le formulaire (le visuel)
+            'myform' => $form->createView()
         ]);
     }
 
-
-    //nouvelle methode -  détecte le slug automatiquement dans l'url param converter
     /**
-     * Permet d'afficher une annonce via son slug 
+     * Permet d'afficher une annonce via son slug
      */
     #[Route('/ads/{slug}', name:'ads_show')]
-    public function show(string $slug ,Ad $ad):Response
+    public function show(string $slug, Ad $ad):Response
     {
-       
         dump($ad);
 
         return $this->render('ad/show.html.twig',[
-            'ad'=> $ad 
+            'ad' => $ad
         ]);
     }
+
+
 }
