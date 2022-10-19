@@ -21,3 +21,6 @@
 .carousel-caption{
     text-shadow: 3px 3px 3px rgba(0,0,0,0.5);
 }
+.full{
+    min-height: 70vh;
+}
