@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class AdController extends AbstractController
@@ -34,6 +36,7 @@ class AdController extends AbstractController
     }
 
     #[Route("/ads/new", name:"ads_create")]
+    #[IsGranted("ROLE_USER")]
     public function create(Request $request, EntityManagerInterface $manager): Response
     {
         $ad = new Ad();
@@ -74,6 +77,7 @@ class AdController extends AbstractController
      * Permet de modifier une annonce
      */
     #[Route("/ads/{slug}/edit", name:'ads_edit')]
+    #[Security("(is_granted('ROLE_USER') and user === ad.getAuthor()) or is_granted('ROLE_ADMIN')", message: "Cette annonce ne vous appartient pas, vous le pouvez pas la modifier")]
     public function edit(Request $request, EntityManagerInterface $manager, Ad $ad):Response
     {
         $form = $this->createForm(AnnonceType::class, $ad);
@@ -87,6 +91,9 @@ class AdController extends AbstractController
                 $manager->persist($image);
             }
                 //$ad->setSlug(""); // pour que le slug soit aussi modifié
+
+                // on ajoute l'auteur mais attention risque de bug jusqu'à théorie sécurity
+                $ad->setAuthor($this->getUser());
 
                 $manager->persist($ad);
                 $manager->flush();
@@ -107,7 +114,21 @@ class AdController extends AbstractController
 
     }
 
+    #[Route('/ads/{slug}/delete', name:"ads_delete")]
+    #[Security("(is_granted('ROLE_USER') and user === ad.getAuthor()) or is_granted('ROLE_ADMIN')", message: "Cette annonce ne vous appartient pas, vous le pouvez pas la modifier")]
+    public function delete(Ad $ad, EntityManagerInterface $manager):Response
+    {
+        //d'abord ceci pour avoir le title avant de supprimer
+        $this->addFlash(
+            'succes',
+            "l'annonce <strong>{$ad->getTitle()}</strong> a bien été supprimée"
+        );
 
+        $manager->remove($ad);
+        $manager->flush();
+
+        return $this->redirectToRoute('ads_index');
+    }
     /**
      * Permet d'afficher une annonce via son slug
      */
