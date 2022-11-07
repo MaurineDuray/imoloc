@@ -15,7 +15,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 mb-3">
-                {{ad.content}}
+                {{ad.content | raw}}
 
                 <div class="bd-example">
                     <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="false">
@@ -49,18 +49,29 @@
                 </div>
             </div>
             <div class="col">
+            {% set a = ad.author %}
                 <div class="row">
-                    <div class="col-4">
-                        <img src="https://picsum.photos/64/64" alt="Avatar de Bruce">
+                    <div class="col-3">
+                        <a href="{{path('user_show', {'slug': a.slug})}}">
+                            {% if a.picture %}
+                                <img src="/uploads/{{a.picture}}" alt="Avatar de{{a.fullName}}" class="avatar avatar-medium">
+                            {% else %}
+                                 <img src="https://picsum.photos/300/300" alt="Avatar de{{a.fullName}}" class="avatar avatar-medium">
+                            {% endif %}
+                            
+                        </a>
+                       
                     </div>
                     <div class="col">
-                        <h3>Bruce wayne</h3>
-                        <span class="badge badge-primary bg-primary">3 annonces
-                        </span>
-                        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nam repellat fugit atque fuga? Cum, aspernatur facere. Nostrum, exercitationem atque id, pariatur iure veritatis fugiat, nobis quia unde accusantium labore aliquam.</p>
-                        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nam repellat fugit atque fuga? Cum, aspernatur facere. Nostrum, exercitationem atque id, pariatur iure veritatis fugiat, nobis quia unde accusantium labore aliquam.</p>
-                        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nam repellat fugit atque fuga? Cum, aspernatur facere. Nostrum, exercitationem atque id, pariatur iure veritatis fugiat, nobis quia unde accusantium labore aliquam.</p>
+                    <a href="{{path('user_show', {'slug': a.slug})}}">
+                        <h3>{{a.fullName}}</h3>
+                    </a>
+                       <button type="button" class= "btn btn-primary">
+                            Annonce(s)<span class="badge badge-primary bg-primary">{{a.ads | length}}</span>
+                       </button>
                     </div>
+                       {{a.description | raw | nl2br}}
+                    
 
                 </div>
             </div>

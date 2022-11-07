@@ -35,9 +35,9 @@ class AppFixtures extends Fixture
             $user = new User();
             $genre = $faker->randomElement($genres);
 
-            $picture = 'https://randomuser.me/api/portraits/';
-            $pictureId = $faker->numberBetween(1,99).'jpg';
-            $picture.=($genre == 'male' ? 'men/' : 'women/').$pictureId;
+            // $picture = 'https://randomuser.me/api/portraits/';
+            // $pictureId = $faker->numberBetween(1,99).'jpg';
+            // $picture.=($genre == 'male' ? 'men/' : 'women/').$pictureId;
 
             $hash = $this->passwordHasher->hashPassword($user,'password');
 
@@ -46,8 +46,7 @@ class AppFixtures extends Fixture
                 -> setEmail($faker->email())
                 ->setIntroduction($faker->sentence())
                 ->setDescription('<p>'.join('</p><p>',$faker->paragraphs(3)).'</p>')
-                ->setPassword($hash)
-                ->setPicture($picture);
+                ->setPassword($hash);
 
             $manager->persist($user);
             $users[] = $user;
