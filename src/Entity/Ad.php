@@ -54,6 +54,7 @@ class Ad
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;
 
+    //récupération des réservations de l'annonce
     #[ORM\OneToMany(mappedBy: 'ad', targetEntity: Booking::class)]
     private Collection $bookings;
 
@@ -70,6 +71,28 @@ class Ad
             $slugify = new Slugify();
             $this->slug = $slugify->slugify($this->title);
         }
+    }
+
+    /**
+     * PErmet d'obtenir un tableau des jours qui ne sont pas disponibles pour cette annonce
+     *
+     * @return array|null
+     */
+    public function getNotAvailableDays(): ?array
+    {
+        $notAvailableDays=[];
+        foreach($this->bookings as $booking)
+        {
+            //calcul entre jours de départ et d'arrivée 
+            //fonction range crée un tableau qui contient chaque étape existente entre deux nombres 
+            // $result = range(10,20,2) -> donnera 10,12,14,16,18,20
+            $resultat = range($booking->getStartDate()->getTimestamp(), $booking->getEndDate()->getTimestamp(), 24*60*60);
+            $days = array_map(function($dayTimestamp){
+                return new \DateTime(date('Y-m-d', $dayTimestamp));
+            }, $resultat);
+            $notAvailableDays = array_merge($notAvailableDays, $days);
+        }
+        return $notAvailableDays;
     }
     
     public function getId(): ?int
