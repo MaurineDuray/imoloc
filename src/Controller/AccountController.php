@@ -156,6 +156,14 @@ class AccountController extends AbstractController
         ]);
     }
 
+    /**
+     * Permet de modifier le mot de passe
+     *
+     * @param Request $request
+     * @param EntityManagerInterface $manager
+     * @param UserPasswordHasherInterface $hasher
+     * @return Response
+     */
     #[Route("/account/password-update", name:'account_password')]
     #[IsGranted("ROLE_USER")]
     public function updatePassword(Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $hasher): Response
