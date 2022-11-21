@@ -9,6 +9,7 @@ use App\Entity\Image;
 
 use DateTimeImmutable;
 use App\Entity\Booking;
+use App\Entity\Comment;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -121,10 +122,14 @@ class AppFixtures extends Fixture
                     ->setComment($comment);
 
                 $manager->persist($booking);
+                $comment = new Comment();
+                $comment -> setContent($faker->paragraph())
+                ->setRating(rand(1,5))
+                ->setAuthor($booker)
+                ->setAd($ad);
+                $manager->persist($comment);
             }
         }
-
-
         $manager->flush();
     }
 }
