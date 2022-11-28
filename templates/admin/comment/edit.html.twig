@@ -17,8 +17,8 @@
             <strong> Date de création:</strong> {{comment.createdAt | date('d/m/Y')}}
         </p>
     </div>
-    {{form_start(myForm)}}
-        {{form_widget(myForm)}}
+    {{form_start(myform)}}
+        {{form_widget(myform)}}
         <button type="submit" class="btn btn-warning"><i class="fas fa-check"></i> Modifier le commentaire</button>
-    {{form_end(myForm)}}
+    {{form_end(myform)}}
 {% endblock %}

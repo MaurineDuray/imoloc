@@ -22,7 +22,8 @@ class RegistrationType extends ApplicationType
         ->add('email', EmailType::class, $this->getConfiguration("Email", "Votre adresse e-mail..."))
         ->add('picture', FileType::class, [
             'label'=> "Avatar(jpg,png,gif)",
-            "required"=>false
+            "required"=>false,
+            'data_class' => null
         ])
         ->add('password', PasswordType::class, $this->getConfiguration("Mot de passe", "Votre mot de passe"))
         ->add('passwordConfirm', PasswordType::class, $this->getConfiguration("Confirmation du mot de passe", "Veuillez confirmer votre mot de passe"))
