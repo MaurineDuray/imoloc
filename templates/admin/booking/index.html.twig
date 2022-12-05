@@ -1,0 +1,44 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Administration des réservations{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="m-y5"></h1>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>Date</td>
+                    <td>Visiteur</td>
+                    <td>Annonce</td>
+                    <td>Durée</td>
+                    <td>Montant</td>
+                    <td class="text-center">Actions</td>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in pagination.data %}
+                <tr>
+                    <td>{{booking.id}}</td>
+                    <td>{{booking.createdAt | date('d/m/Y')}}</td>
+                    <td>{{booking.booker.fullName}}</td>
+                    <td>{{booking.ad.title}}</td>
+                    <td>{{booking.duration}}</td>
+                    <td>{{booking.amount}} €</td>
+                    <td class="text-center">
+                        <a href="{{path('admin_bookings_edit', {'id': booking.id})}}" class="btn btn-warning"><i class="fa fa-pen"></i></a>
+                        <a href="{{path('admin_bookings_delete', {'id': booking.id})}}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                    </td>
+
+                </tr>
+                    
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% include "admin/partials/_pagination.html.twig" with {'route':'admin_bookings_index'} %}
+    </div>
+    
+{% endblock %}
