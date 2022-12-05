@@ -6,6 +6,7 @@ use App\Entity\Ad;
 use App\Entity\Image;
 use App\Form\AnnonceType;
 use App\Repository\AdRepository;
+use App\Service\PaginationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -24,14 +25,17 @@ class AdController extends AbstractController
      * @param AdRepository $repo
      * @return Response
      */
-    #[Route('/ads', name: 'ads_index')]
-    public function index(AdRepository $repo): Response
+    #[Route('/ads/{page<\d+>?1}', name: 'ads_index')]
+    public function index(PaginationService $pagination, $page): Response
     {
-        $ads = $repo->findAll();
+
+        $pagination->setEntityClass(Ad::class)
+            ->setPage($page)
+            ->setLimit(9);
 
 
         return $this->render('ad/index.html.twig', [
-            'ads' => $ads
+            'pagination' => $pagination
         ]);
     }
 

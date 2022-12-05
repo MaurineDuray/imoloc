@@ -26,7 +26,9 @@ class AdminBookingController extends AbstractController
     {
         $pagination->setEntityClass(Booking::class)
             ->setPage($page)
-            ->setLimit(10);
+            ->setLimit(10)//pas obligatoire car il est défini par défaut dans le PaginationService
+            ->setOrder(["amount"=>"DESC"]);
+
         return $this->render('admin/booking/index.html.twig', [
             'pagination' => $pagination,
         ]);
