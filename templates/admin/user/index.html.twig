@@ -18,22 +18,31 @@
             </tr>
         </thead>
         <tbody>
-            {% for user in users %}
+            {% for user in pagination.data %}
                 <tr>
                     <td>{{user.id}}</td>
                     <td>{{user.firstName}}</td>
                     <td>{{user.lastName}}</td>
                     <td>{{user.email}}</td>
                     <td>{{user.introduction}}</td>
-                    <td>
+                    {% if user.id==1 %}
+                        <td>
+                            Administrateur
+                        </td>
+                    {% else %}
+                        <td>
                         <a href="{{path('admin_users_edit', {'id':user.id})}}" class="btn btn-warning"><i class="fas fa-edit"></i></a>
                             <a href="{{path('admin_users_delete', {'id': user.id})}}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
                     </td>
+                    {% endif %}
+                    
+                    
                 </tr>
                 
             {% endfor %}
         </tbody>
     </table>
+    {{pagination.display()}}
 </div>
 {% endblock %}
 

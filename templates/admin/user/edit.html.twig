@@ -4,11 +4,155 @@
 {% form_theme myForm _self %}
 
 {% block body %}
-    <h1 class="my-5">Modification l'utilisateur {{user.id}}</h1>
-    <a href="{{path('admin_user_index')}}" class="btn btn-secondary my-3" >Retour</a>
-   
-    {{form_start(myForm)}}
-        {{form_widget(myForm)}}
-        <button type="submit" class="btn btn-warning"><i class="fas fa-check"></i> Modifier l'utilisateur</button>
-    {{form_end(myForm)}}
+    {% if user.id==1 %}
+    <div class="container">
+     <h1 class="my-5">Modification l'utilisateur n°{{user.id}} - {{user.firstName}} {{user.lastName}}</h1>
+        <div class="card text-center">
+            <strong>Vous ne pouvez pas modifier les informations de l'administrateir principal du site !</strong>
+        </div>
+        <a href="{{path('admin_user_index')}}" class="btn btn-secondary my-3" >Retour</a>
+        
+    </div>
+    {% else %}
+    <div class="container">
+        
+        <h1 class="my-5"> 
+            {% if user.picture %}
+                <img src="../public/uploads/{{user.picture}}" alt="Avatar de{{user.fullName}}" class="avatar avatar-medium">
+            {% else %}
+                <img src="https://picsum.photos/300/300" alt="Avatar de{{user.fullName}}" class="avatar avatar-medium">
+            {% endif %}
+            Modification l'utilisateur n°{{user.id}} - {{user.firstName}} {{user.lastName}}
+        </h1>
+        <a href="{{path('admin_user_index')}}" class="btn btn-secondary my-3" >Retour</a>
+
+        
+        
+
+        <div class="row">
+            <div class="col">
+                <div class="card bg-light">
+                    <div class="card-header">
+                        <b>Modifier les informations de l'utilisateur ? </b>
+                        <a href="" class="btn btn-danger " >Nouveau mot de passe </a>
+                    </div>
+                    <div class="card-body">
+                       
+                        {{form_row(myForm.firstName)}}
+                        {{form_row(myForm.lastName)}}
+                        {{form_row(myForm.email)}}
+                        {{form_row(myForm.description)}}
+
+                        <button type="submit" class="btn btn-warning"><i class="fas fa-check"></i> Modifier l'utilisateur</button>
+                        
+                    </div>
+                </div> 
+                <div class="card bg-light mt-3">
+                    <div class="card-header">
+                        <strong>Ses réservations</strong>
+                    </div>
+                    <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Annonce</th>
+                                <th>Auteur</th>
+                                
+                                <th>Montant</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in user.bookings %}
+                                <tr>
+                                    <td>{{booking.id}}</td>
+                                    <td>{{booking.ad.title}}</td>
+                                    <td>{{booking.ad.author.fullName}}</td>
+                                    <td>{{booking.amount}}€</td>
+                                    <td class="text-center">
+                                        <a href="{{path('admin_bookings_edit', {'id':booking.id})}}" class="btn btn-success">
+                                            <i class="fa fa-pen"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card bg-light">
+                    <div class="card-header"><strong>Ses annonces</strong></div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ad in user.ads %}
+                                    <tr>
+                                    <td>{{ad.id}}</td>
+                                    <td>{{ad.title}}</td>
+                                    <td class="text-center">
+                                        <a href="{{path('admin_ads_edit',{'id':ad.id})}}" class="btn btn-success">
+                                            <i class="fa fa-pen"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card bg-light mt-3">
+                    <div class="card-header">
+                        <strong>Ses commentaires</strong>
+                    </div>
+                    <div class="card-body">
+                    <table class="table">
+                         <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Annonce</th>
+                                <th>Note</th>
+                                
+                                <th>Actions</th>
+                            </tr>   
+                        </thead>
+                        <tbody>
+                            {% for comment in user.comments %}
+                                <tr>
+                                    <td>{{comment.id}}</td>
+                                    <td>{{comment.ad.id}}</td>
+                                    <td>{{comment.rating}}</td>
+                                    
+                                    <td class="text-center">
+                                        <a href="{{path('admin_comments_edit',{'id':comment.id})}}" class="btn btn-success">
+                                            <i class="fa fa-pen"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            
+                        </tbody>
+                    </table>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+  
+       
+    </div>
+    {% endif %}
 {% endblock %}

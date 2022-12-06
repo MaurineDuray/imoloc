@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\AccountType;
 use App\Form\RegistrationType;
 use App\Repository\UserRepository;
+use App\Service\PaginationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,14 +21,19 @@ class AdminUserController extends AbstractController
      * @param UserRepository $repo
      * @return Response
      */
-    #[Route('/admin/user', name: 'admin_user_index')]
-    public function index(UserRepository $repo): Response
+    #[Route('/admin/user/{page<\d+>?1}', name: 'admin_user_index')]
+    public function index(PaginationService $pagination, $page): Response
     {
+        $pagination->setEntityClass(User::class)
+            ->setPage($page)
+            ->setLimit(10);//pas obligatoire car il est défini par défaut dans le PaginationService
+
         return $this->render('admin/user/index.html.twig', [
-            'users' => $repo->findAll(),
+            'pagination' => $pagination,
         ]);
     }
 
+    
    
     /**
      * Permet de modifier un user
@@ -37,7 +43,7 @@ class AdminUserController extends AbstractController
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    #[Route('/admin/users/{id}/edit', name:"admin_users_edit")]
+    #[Route('/admin/users/{id<\d+>?2}/edit', name:"admin_users_edit")]
     public function edit(User $user, Request $request, EntityManagerInterface $manager):Response
     {
         $form=$this->createForm(RegistrationType::class, $user);
